@@ -2,6 +2,8 @@
 
 This was an experiment to generate an LED blinking program using Github Copilot for the STM32F407VET6 Black Board. All code was generated and debugged on target by copilot over an stlink with GDB.
 
+Copilot took a long time to debug the program as there was as the program would end up in the default interrupt handler almost immediatly after reset. Copilot finally found the error in the .ld file as it was using an incorrect size of the RAM. Copilot found and fixed the issue.
+
 # STM32F407 Black Board LED Blink - Bare Metal Program
 
 This is a complete bare metal program for the STM32F407VET6 Black Board that blinks an LED without any HAL libraries.
