@@ -1,40 +1,28 @@
-#include "stm32f407.h"
-
-/* Delay function - approximate delay in milliseconds */
-void delay_ms(uint32_t ms) {
-    uint32_t i, j;
-    for (i = 0; i < ms; i++)
-        for (j = 0; j < 8000; j++)
-            ;
-}
-
 int main(void) {
-    /* Enable GPIOA Clock */
-    RCC_AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
+    volatile unsigned int *rcc_ahb1 = (unsigned int *)0x40023830;
+    volatile unsigned int *gpio_a_mode = (unsigned int *)0x40020000;
+    volatile unsigned int *gpio_a_otype = (unsigned int *)0x40020004;
+    volatile unsigned int *gpio_a_ospeed = (unsigned int *)0x40020008;
+    volatile unsigned int *gpio_a_pupd = (unsigned int *)0x4002000C;
+    volatile unsigned int *gpio_a_bsrr = (unsigned int *)0x40020018;
 
-    /* Configure PA6 as output (LED pin on STM32F407 Black Board) */
-    /* Set PA6 to output mode (01 in MODER) */
-    GPIOA_MODER &= ~(3 << (LED_PIN * 2));  /* Clear bits */
-    GPIOA_MODER |= (1 << (LED_PIN * 2));   /* Set to output mode */
+    // Enable GPIOA clock
+    *rcc_ahb1 |= (1 << 0);
 
-    /* Set output type to push-pull (0 in OTYPER) */
-    GPIOA_OTYPER &= ~(1 << LED_PIN);
+    // Configure PA6 and PA7 as outputs, push-pull, medium speed, no pull
+    *gpio_a_mode &= ~(0xF << 12);  // Clear MODER bits for pins 6 and 7
+    *gpio_a_mode |= (0x5 << 12);   // Set both to output mode (01b)
+    *gpio_a_otype &= ~((1 << 6) | (1 << 7)); // push-pull
+    *gpio_a_ospeed &= ~(0xF << 12);
+    *gpio_a_ospeed |= (0xA << 12); // medium speed
+    *gpio_a_pupd &= ~(0xF << 12);  // no pull-up/pull-down
 
-    /* Set output speed to high (11 in OSPEEDR) */
-    GPIOA_OSPEEDR |= (3 << (LED_PIN * 2));
-
-    /* No pull-up/pull-down (00 in PUPDR) */
-    GPIOA_PUPDR &= ~(3 << (LED_PIN * 2));
-
-    /* Main loop - blink LED */
     while (1) {
-        /* Turn on LED (set PA6) */
-        GPIOA_BSRR = (1 << LED_PIN);
-        delay_ms(500);
-
-        /* Turn off LED (reset PA6) */
-        GPIOA_BSRR = (1 << (LED_PIN + 16));
-        delay_ms(500);
+        // Active-low friendly: drive low to turn on, high to turn off
+        *gpio_a_bsrr = (1 << (6 + 16)) | (1 << (7 + 16)); // reset -> low/on
+        for (volatile int i = 0; i < 300000; i++);
+        *gpio_a_bsrr = (1 << 6) | (1 << 7);               // set -> high/off
+        for (volatile int i = 0; i < 300000; i++);
     }
 
     return 0;
