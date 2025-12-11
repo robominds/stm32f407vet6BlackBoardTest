@@ -1,6 +1,8 @@
 # STM32F407VET6 Black Board LED Blink - Bare Metal
 
-Successfully debugged bare metal LED blinking program using Github Copilot for the STM32F407VET6 Black Board. All code was generated and debugged on target via ST-Link and GDB.
+**Developed and debugged entirely using GitHub Copilot.**
+
+Successfully debugged bare metal LED blinking program for the STM32F407VET6 Black Board. All code was generated and debugged on target via ST-Link and GDB using Copilot as the primary development assistant.
 
 The primary challenge was a HardFault issue due to incorrect RAM size in the linker script. The script initially declared 192 KB of RAM starting at 0x20000000, but the STM32F407VE only has 128 KB of SRAM at that location (plus 64 KB of CCM at 0x10000000). This caused the stack pointer to point to non-existent memory, triggering bus faults on any stack operations. The fix reduced RAM to 128 KB in the linker script. Additionally, the C startup was replaced with a purpose-built ARM assembly startup for reliability.
 
