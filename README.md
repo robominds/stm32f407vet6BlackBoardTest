@@ -1,3 +1,5 @@
+# *** Generated and debugged on hardware completely with Github Copilot ***
+
 # STM32F407 Black Board LED Blink - Bare Metal Program
 
 This is a complete bare metal program for the STM32F407VET6 Black Board that blinks an LED without any HAL libraries.
