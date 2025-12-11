@@ -1,4 +1,6 @@
-# *** Generated and debugged on hardware completely with Github Copilot ***
+# *** Generated completely with Github Copilot ***
+
+This was an experiment to generate an LED blinking program using Github Copilot for the STM32F407VET6 Black Board. All code was generated and debugged on target by copilot over an stlink with GDB.
 
 # STM32F407 Black Board LED Blink - Bare Metal Program
 
